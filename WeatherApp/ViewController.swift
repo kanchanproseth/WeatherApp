@@ -10,6 +10,7 @@ import UIKit
 import SideMenuController
 var arrSagement = [String]()
 var typeOfDegree: String?
+var currentCityname = [String]()
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, SideMenuControllerDelegate{
     var data: Data?
     var _weatherType: String!
@@ -51,13 +52,19 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         print("*************************************\(typeOfDegree)")
         tableView.delegate = self
         tableView.dataSource = self
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
         if arrCity.count > 0 {
             print("111111111\(arrCity[0])")
             loadData(arrCity[0])
             loadNextDayData(arrCity[0])
         }else{
+            if currentCityname.count == 1 {
+                loadData(currentCityname[0])
+                loadNextDayData(currentCityname[0])
+            }else{
             loadData(CurrentCity.text!)
             loadNextDayData(CurrentCity.text!)
+            }
         }
         // Do any additional setup after loading the view, typically from a nib.
     }
@@ -91,15 +98,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func loadData(_ cityname:String){
         self.refreshdataIndicator.isHidden = false
         self.refreshdataIndicator.startAnimating()
-        UIApplication.shared.isNetworkActivityIndicatorVisible = true
         CurrentCity.text = cityname
+        currentCityname.removeAll(keepingCapacity: false)
+        currentCityname.append(CurrentCity.text!)
         let urlStr = "http://api.openweathermap.org/data/2.5/weather?q=\(cityname.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!)&appid=965a2c6acdab9054673c5ecbd0cbf2b6"
         print(urlStr)
         let url = URL(string: urlStr)
         let request = URLRequest(url: url!)
         let config = URLSessionConfiguration.default
         let session = URLSession(configuration: config)
-        
+
         let task = session.dataTask(with: request, completionHandler: {
             data, response, error in
             if error != nil {
@@ -122,15 +130,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                                 let kelvinToFarenheitPreDivision = (currentTemperature * (9/5) - 459.67)
                                 
                                 let kelvinToFarenheit = Double(round(10 * kelvinToFarenheitPreDivision/10))
-                                
                                 let kelvinToCelcius = currentTemperature - 273.15
-                                if typeOfDegree == "C"{
-                                self._currentTemp = kelvinToCelcius
-                                }else{
-                                self._currentTemp = kelvinToFarenheit
+                                DispatchQueue.main.async {
+                                    if typeOfDegree == "C"{
+                                        self._currentTemp = kelvinToCelcius
+                                    }else{
+                                        self._currentTemp = kelvinToFarenheit
+                                    }
+                                    self.CurrentWeather.text = "\(round(self._currentTemp!))°"
                                 }
-                                print(self._currentTemp)
-                                self.CurrentWeather.text = "\(round(self._currentTemp!))°"
+                                
+                                
                             }
                         }
                         if let main = json["wind"] as? Dictionary<String, AnyObject> {
@@ -138,13 +148,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                             self._currentWindSpeed = main["speed"] as? Double
                         }
                     }
-                    self.CurrentWeatherDescription.text = ("Weather: \(self._weatherType!), Wind:\(self._currentWindSpeed!)Km/h")
                     DispatchQueue.main.async {
+                        self.CurrentWeatherDescription.text = ("Weather: \(self._weatherType!), Wind:\(self._currentWindSpeed!)Km/h")
+                        
                         self.refreshdataIndicator.isHidden = true
                         self.refreshdataIndicator.stopAnimating()
-                        UIApplication.shared.isNetworkActivityIndicatorVisible = false
                     }
-                    
                     let date = NSDate()
                     let calendar = NSCalendar.current
                     let currentyear = calendar.component(.year, from: date as Date)
@@ -165,8 +174,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
     }
     func loadNextDayData(_ cityname:String){
-        self.refreshdataIndicator.isHidden = false
-        self.refreshdataIndicator.startAnimating()
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         let urlStr = "http://api.openweathermap.org/data/2.5/forecast?q=\(cityname.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!)&appid=965a2c6acdab9054673c5ecbd0cbf2b6"
         let url = URL(string: urlStr)
@@ -191,11 +198,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                             
                             DispatchQueue.main.async {
                                 self.tableView.reloadData()
-                                self.refreshdataIndicator.isHidden = true
-                                self.refreshdataIndicator.stopAnimating()
-                                UIApplication.shared.isNetworkActivityIndicatorVisible = false
                             }
-                            
+                            UIApplication.shared.isNetworkActivityIndicatorVisible = false
                         }
                     }
                 } catch {

@@ -17,18 +17,17 @@ class WeatherCell: UITableViewCell {
 
     
     
-    
     func configureCell(forecast: Forecast) {
-        lowTemp.text = "\(forecast.lowTemp)"
-        highTemp.text = "\(forecast.highTemp)"
+        lowTemp.text = "\(forecast.lowTemp)°"
+        highTemp.text = "\(forecast.highTemp)°"
         weatherType.text = forecast.weatherType
         
         weatherIcon.image = UIImage(named: forecast.weatherType)
         dayLabel.text = forecast.date
     }
     func configureCellForCelCius(forecast: Forecast) {
-        lowTemp.text = "\(round((forecast.lowTemp - 32) / 1.8))"
-        highTemp.text = "\(round((forecast.highTemp - 32) / 1.8))"
+        lowTemp.text = "\(round((forecast.lowTemp - 32) / 1.8))°"
+        highTemp.text = "\(round((forecast.highTemp - 32) / 1.8))°"
         weatherType.text = forecast.weatherType
         
         weatherIcon.image = UIImage(named: forecast.weatherType)

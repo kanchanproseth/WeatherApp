@@ -13,62 +13,14 @@ import CoreData
 var arrFilter = [String]()
 var arrCity = [String]()
 
-class SideviewController: UIViewController, UITableViewDelegate, UITableViewDataSource ,UISearchControllerDelegate,UISearchBarDelegate, UISearchResultsUpdating, NSFetchedResultsControllerDelegate {
+class SideviewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NSFetchedResultsControllerDelegate {
 
     //Delegate
     
-    var searchController: UISearchController!
     var controllers: NSFetchedResultsController<City>!
     var city = [NSManagedObject]()
     @IBOutlet weak var SegmentController: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
-    var shouldShowSearchResults = false
-    var filteredArray = [String]()
-    @available(iOS 8.0, *)
-    public func updateSearchResults(for searchController: UISearchController) {
-        print("3")
-        print("updateSearchResults")
-        filteredArray.removeAll(keepingCapacity: false)
-        arrFilter.removeAll(keepingCapacity: false)
-        let request:NSFetchRequest<City>
-            request = NSFetchRequest<City>(entityName: "City")
-        
-        do{
-            let entities = try context.fetch(request)
-            for item in entities{
-                
-                for key in item.entity.attributesByName.keys{
-                    let value: Any? = item.value(forKey: key)
-                    if key == "cityname" {
-                    print("\(key) = \(value)")
-                    arrFilter.append(value! as! String)
-                    print(arrFilter)
-                    }
-                }
-                let searchString = searchController.searchBar.text
-                
-                // Filter the data array and get only those countries that match the search text.
-                filteredArray = arrFilter.filter({ (city) -> Bool in
-                    let cityText: NSString = city as NSString
-                    
-                    return (cityText.range(of: searchString!, options: NSString.CompareOptions.caseInsensitive).location) != NSNotFound
-                })
-                print(arrFilter)
-                if filteredArray == [] {
-                   filteredArray = arrFilter
-                }
-                // Reload the tableview.
-                tableView.reloadData()
-
-            }
-        }catch{
-            
-        }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-    }
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -107,27 +59,16 @@ class SideviewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if shouldShowSearchResults == false {
             let sections = controllers.sections
             let sectionInfo = sections?[section]
             return sectionInfo!.numberOfObjects
-        }
-        else {
-            return filteredArray.count
-        }
+      
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let Mycell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! LeftSideViewCell
-        if shouldShowSearchResults == false{
             configurecell(cell: Mycell, indexpath: indexPath as NSIndexPath)
-            print("reload coredata")
-        }
-        else{
-            Mycell.CityName.text = filteredArray[indexPath.row]
-            print("reload filterdata")
-        }
         return Mycell
     }
     
@@ -226,63 +167,11 @@ class SideviewController: UIViewController, UITableViewDelegate, UITableViewData
 
     
     @IBAction func AddCity(_ sender: Any) {
-        configureSearchController()
-        searchController.searchBar.isHidden = false
+        
+        
     }
   
-    func configureSearchController() {
-        searchController = UISearchController(searchResultsController: nil)
-        searchController.delegate = self
-        searchController.searchResultsUpdater = self
-        searchController.searchBar.isHidden = true
-        searchController.dimsBackgroundDuringPresentation = true
-        searchController.searchBar.placeholder = "ENTER CITY"
-        searchController.searchBar.delegate = self
-        searchController.searchBar.sizeToFit()
-        searchController.searchBar.barTintColor = UIColor.black
-        searchController.searchBar.tintColor = UIColor.orange
-        searchController.searchBar.showsBookmarkButton = false
-        searchController.searchBar.setValue("Done", forKey:"_cancelButtonText")
-        definesPresentationContext = true
-        tableView.tableHeaderView = searchController.searchBar
-    }
-    
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        shouldShowSearchResults = true
-        tableView.reloadData()
-    }
-    
-    //Cancel Button action of SearchBar
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        print("1")
-        shouldShowSearchResults = false
-        if (searchController.searchBar.text == ""){
-            searchBar.showsCancelButton = false
-        }else{
-            let NewCity = City(context:context)
-            if let newCityname = searchController.searchBar.text?.trimmingCharacters(in: .whitespaces){
-                print(newCityname)
-                NewCity.cityname = newCityname
-                let created = NSDate()
-                NewCity.created = created
-                AppDelegateAccess.saveContext()
-                searchBar.showsCancelButton = false
-            }
-        }
-        searchController.searchBar.isHidden = true
-        tableView.tableHeaderView = nil
-        tableView.reloadData()
-        shouldShowSearchResults = false
-    }
-    //when click Search bar
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        print("2")
-        if !shouldShowSearchResults {
-            shouldShowSearchResults = true
-            tableView.reloadData()
-        }
-        searchController.searchBar.resignFirstResponder()
-    }
+
 
     
 }
