@@ -153,15 +153,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                         
                         self.refreshdataIndicator.isHidden = true
                         self.refreshdataIndicator.stopAnimating()
+                        let date = NSDate()
+                        let calendar = NSCalendar.current
+                        let currentyear = calendar.component(.year, from: date as Date)
+                        let currentmonth = calendar.component(.month, from: date as Date)
+                        let currentday = calendar.component(.day, from: date as Date)
+                        let hour = calendar.component(.hour, from: date as Date)
+                        let minutes = calendar.component(.minute, from: date as Date)
+                        self.UpdatedTimeDetails.text = "Updated: \(currentyear)-\(currentmonth)-\(currentday) at \(hour):\(minutes) "
                     }
-                    let date = NSDate()
-                    let calendar = NSCalendar.current
-                    let currentyear = calendar.component(.year, from: date as Date)
-                    let currentmonth = calendar.component(.month, from: date as Date)
-                    let currentday = calendar.component(.day, from: date as Date)
-                    let hour = calendar.component(.hour, from: date as Date)
-                    let minutes = calendar.component(.minute, from: date as Date)
-                    self.UpdatedTimeDetails.text = "Updated: \(currentyear)-\(currentmonth)-\(currentday) at \(hour):\(minutes) "
+                    
                     arrCity.removeAll(keepingCapacity: false)
                 } catch {
                     print("error in JSONSerialization")
