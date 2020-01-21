@@ -6,5 +6,6 @@ target 'WeatherApp' do
   use_frameworks!
 
   # Pods for WeatherApp
-   pod 'SideMenuController'
+   pod 'SideMenuController', :git => 'https://github.com/EtchUK/SideMenuController'
+#   https://github.com/EtchUK/SideMenuController
 end

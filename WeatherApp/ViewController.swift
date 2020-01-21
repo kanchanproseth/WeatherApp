@@ -34,7 +34,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
 //    override func viewDidDisappear(_ animated: Bool) {
 //    }
-    func receivePush(_ noti : NSNotification){
+    @objc func receivePush(_ noti : NSNotification){
         if let userInfo = noti.userInfo as? [String: Any] // or use if you know the type  [AnyHashable : Any]
         {
             print(userInfo)

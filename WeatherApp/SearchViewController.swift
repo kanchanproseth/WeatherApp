@@ -50,7 +50,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             let sectionInfo = sections?[section]
             return sectionInfo!.numberOfObjects
         }
-        return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -155,7 +154,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             if let newCityname = searchController.searchBar.text?.trimmingCharacters(in: .whitespaces){
                 print(newCityname)
                 NewCity.cityname = newCityname
-                let created = NSDate()
+                let created = Date()
                 NewCity.created = created
                 AppDelegateAccess.saveContext()
                 searchBar.showsCancelButton = false

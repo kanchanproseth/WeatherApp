@@ -29,10 +29,10 @@ class SideviewController: UIViewController, UITableViewDelegate, UITableViewData
         tableView.delegate = self
         tableView.dataSource = self
         attemtfetch()
-        SegmentController.addTarget(self, action: #selector(SideviewController.sagementcall(_:)), for: .valueChanged)
+        SegmentController.addTarget(self, action: #selector(sagementcall), for: .valueChanged)
         
     }
-    func sagementcall(_ mySegement : UISegmentedControl){
+    @objc func sagementcall(_ mySegement : UISegmentedControl){
         var message = ""
         if SegmentController.selectedSegmentIndex == 0 {
             message = "C"
@@ -94,7 +94,7 @@ class SideviewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     //Edit Tableviewcell
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         let accessCity = controllers.object(at: indexPath as IndexPath)
         var arr = [accessCity]
         //delete
